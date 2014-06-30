@@ -1,0 +1,26 @@
+server{
+      listen 80;
+      server_name test.lua.com;
+     
+      #http://test.lua.com/lua
+      location /hello {
+         default_type "text/plain";
+         content_by_lua 'ngx.say("Nginx Lua Hello!")';
+      }
+     
+      #GET http://test.lua.com/get?key=key
+      location /get {
+          set_unescape_uri $key $arg_key;
+          redis2_query get $key;
+          redis2_pass 127.0.0.1:6379; #配置redis访问
+      }
+     
+      #SET http://test.lua.com/set?key=key&val=value
+      location /set {
+          set_unescape_uri $key $arg_key;
+          set_unescape_uri $val $arg_val;
+          redis2_query set $key $val;
+          redis2_pass 127.0.0.1:6379;
+      }
+
+}
